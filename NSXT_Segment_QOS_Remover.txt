@@ -6,7 +6,7 @@ url = "https://nsxt01-wld-01.corp.local/policy/api/v1/infra/segments"
 
 payload = {}
 headers = {
-  'Authorization': 'Basic YWRtaW46Vk13YXJlMTIzIVZNd2FyZTEyMyE='
+  'Authorization': 'Basic YWRtaW46Vk13YXJlMTIzIVZNd2FyZTEyMyE=' # this value is fetched from postman
 }
 
 response = requests.request("GET", url, headers=headers, data=payload,verify=False)
@@ -16,3 +16,4 @@ file_path="segments.json"
 with open(file_path, 'w') as json_file:
     json.dump(json_data, json_file)
 #print(json_data)
+#print(json_data["results"][1]["id"]) this is a test to print first segment id
