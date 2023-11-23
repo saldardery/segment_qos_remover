@@ -22,7 +22,7 @@ for i in json_data["results"]:
     qos_url = "https://nsxt01-wld-01.corp.local/policy/api/v1/infra/segments/"+segment_name+"/segment-qos-profile-binding-maps"
     qos_response = requests.get(qos_url,auth=HTTPBasicAuth(username, password),verify=False)
     qos_response=qos_response.json()
-    # the below if condition checks if there is a mapping on the segment or not , if yes it will take fetch the name of the QOS
+    # the below if condition checks if there is a mapping on the segment or not , if yes it will  fetch the name of the QOS
     if(qos_response["result_count"]==1):
         print("yes!")
         print(qos_response["results"][0]["qos_profile_path"])
