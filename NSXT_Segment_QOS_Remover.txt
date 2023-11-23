@@ -8,23 +8,26 @@ from requests.auth import HTTPBasicAuth
 username = 'admin'
 password = 'VMware123!VMware123!'
 
+# Fetch All Segments in NSXT and save it in json format
 segment_url = "https://nsxt01-wld-01.corp.local/policy/api/v1/infra/segments"
 response = requests.get(segment_url,auth=HTTPBasicAuth(username, password),verify=False)
 json_data = response.json()
-file_path="test.json"
-z=0
-with open(file_path, 'w') as json_file:
-    json.dump(json_data, json_file)
 
+#Counter to iterate between segments
+z=0
+
+#Iterate between each segment and get qos profile mapping and save it in json format qos_response
 for i in json_data["results"]:
     segment_name=json_data["results"][z]["id"]
     qos_url = "https://nsxt01-wld-01.corp.local/policy/api/v1/infra/segments/"+segment_name+"/segment-qos-profile-binding-maps"
     qos_response = requests.get(qos_url,auth=HTTPBasicAuth(username, password),verify=False)
     qos_response=qos_response.json()
+    # the below if condition checks if there is a mapping on the segment or not , if yes it will take fetch the name of the QOS
     if(qos_response["result_count"]==1):
         print("yes!")
         print(qos_response["results"][0]["qos_profile_path"])
         qos_name=qos_response["results"][0]["qos_profile_path"]
+        # the below if condition will check if the Qos Name fetched matches the QOS we need to remove , if yes it will proceed with deletion
         if (qos_name == "/infra/qos-profiles/Test_QOS"):
             qos_id=qos_response["results"][0]["id"]
             delete_qos_url = "https://nsxt01-wld-01.corp.local/policy/api/v1/infra/segments/"+segment_name+"/segment-qos-profile-binding-maps/"+qos_id
