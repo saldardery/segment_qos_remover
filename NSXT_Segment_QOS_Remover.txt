@@ -2,27 +2,32 @@ import json
 import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+from requests.auth import HTTPBasicAuth
 
+# Replace 'your_username' and 'your_password' with your actual credentials
+username = 'admin'
+password = 'VMware123!VMware123!'
 
-url = "https://nsxt01-wld-01.corp.local/policy/api/v1/infra/segments"
-
-payload = {}
-headers = {'Authorization': 'Basic YWRtaW46Vk13YXJlMTIzIVZNd2FyZTEyMyE='}
-
-response = requests.request("GET", url, headers=headers, data=payload,verify=False)
+segment_url = "https://nsxt01-wld-01.corp.local/policy/api/v1/infra/segments"
+response = requests.get(segment_url,auth=HTTPBasicAuth(username, password),verify=False)
 json_data = response.json()
 file_path="test.json"
 z=0
 with open(file_path, 'w') as json_file:
     json.dump(json_data, json_file)
-#print(json_data["results"][1]["id"])
+
 for i in json_data["results"]:
     segment_name=json_data["results"][z]["id"]
     qos_url = "https://nsxt01-wld-01.corp.local/policy/api/v1/infra/segments/"+segment_name+"/segment-qos-profile-binding-maps"
-    qos_response = requests.request("GET", qos_url, headers=headers, data=payload,verify=False)
+    qos_response = requests.get(qos_url,auth=HTTPBasicAuth(username, password),verify=False)
     qos_response=qos_response.json()
     if(qos_response["result_count"]==1):
         print("yes!")
-    #print(qos_response["results"][0]["qos_profile_path"])
+        print(qos_response["results"][0]["qos_profile_path"])
+        qos_name=qos_response["results"][0]["qos_profile_path"]
+        if (qos_name == "/infra/qos-profiles/Test_QOS"):
+            qos_id=qos_response["results"][0]["id"]
+            delete_qos_url = "https://nsxt01-wld-01.corp.local/policy/api/v1/infra/segments/"+segment_name+"/segment-qos-profile-binding-maps/"+qos_id
+            delete_qos_response=requests.delete(delete_qos_url,auth=HTTPBasicAuth(username, password),verify=False)
+            print("deletion complete")
     z=z+1
-
